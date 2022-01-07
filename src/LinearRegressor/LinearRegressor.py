@@ -31,7 +31,7 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
         self.b = 0.0
 
     @staticmethod
-    def loss(w, b: float, X, y) -> float:
+    def loss(w: np.ndarray, b: float, X: np.ndarray, y: np.ndarray) -> float:
         """
         Compute the MSE objective loss.
 
@@ -41,12 +41,12 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
         :param y: targets for loss computation; array of shape (n_samples,)
         :return: the linear regression objective loss (float scalar)
         """
-        m = len(X)
+        m = X.shape[0]
         loss = (np.linalg.norm(X.dot(w) + b - y)**2)/m
         return loss
 
     @staticmethod
-    def gradient(w, b: float, X: np.ndarray, y):
+    def gradient(w: np.ndarray, b: float, X: np.ndarray, y: np.ndarray):
         """
         Compute the (analytical) linear regression objective gradient.
 
@@ -56,11 +56,9 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
         :param y: targets for loss computation; array of shape (n_samples,)
         :return: a tuple with (the gradient of the weights, the gradient of the bias)
         """
-        # calculate the analytical gradient w.r.t w and b
-        m = len(X)
-        loss_part = X.dot(w) - y
-        g_w = (X.transpose().dot(loss_part + b))*(2/m)
-        g_b = (np.sum(loss_part))*(2/m) + 2*b
+        margin = X@w + b - y
+        g_w = (X.transpose() @ margin) * (2 / X.shape[0])
+        g_b = (np.ones(X.shape[0]).transpose() @ margin) * (2 / X.shape[0])
         return g_w, g_b
 
     def fit_with_logs(self, X, y, max_iter: int = 1000, keep_losses: bool = True,
@@ -97,7 +95,7 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
             g_w, g_b = type(self).gradient(self.w, self.b, batch_X, batch_y)
 
             # Perform a gradient step
-            # TODO: update the learned parameters correctly
+            # update the learned parameters correctly
             self.w = self.w - self.lr*g_w
             self.b = self.b - self.lr*g_b
 
