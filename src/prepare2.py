@@ -363,7 +363,7 @@ def mergeBloodA(df: pd.DataFrame):
         (df.blood_A == 1) | (df.blood_AB == 1)).astype(int))
 
 
-def prepare_data(data, training_data):
+def prepare_data(data, training_data, drop_id=True):
     '''
     Returns a cleaned copy of data ready to be used for prediction.
 
@@ -404,6 +404,9 @@ def prepare_data(data, training_data):
                     'num_of_siblings', 'shortness_of_breath', 'fever', 'sugar_levels',
                     'PCR_01', 'PCR_02', 'PCR_03', 'PCR_05', 'PCR_06', 'PCR_07', 'PCR_10',
                     'VirusScore']
+    if not drop_id:
+        cols_to_keep.insert(0, 'patient_id')
+    
     data_copy = data_copy[cols_to_keep]
 
     pd.options.mode.chained_assignment = None  # HACK
