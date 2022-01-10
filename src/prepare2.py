@@ -1,3 +1,4 @@
+from typing import Dict
 import numpy as np
 from numpy.core.numeric import outer
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
@@ -406,7 +407,8 @@ def prepare_data(data, training_data, drop_id=True):
                     'VirusScore']
     if not drop_id:
         cols_to_keep.insert(0, 'patient_id')
-    
+    if 'VirusScore' not in data_copy.columns:
+        cols_to_keep.remove('VirusScore')
     data_copy = data_copy[cols_to_keep]
 
     pd.options.mode.chained_assignment = None  # HACK
